@@ -12,6 +12,7 @@ import reactor.core.publisher.Mono;
 @Component
 @Slf4j
 public class LoggingFilter extends AbstractGatewayFilterFactory<LoggingFilter.Config> {
+
 	public LoggingFilter() {
 		super(Config.class);
 	}
@@ -23,11 +24,11 @@ public class LoggingFilter extends AbstractGatewayFilterFactory<LoggingFilter.Co
 			ServerHttpResponse response = exchange.getResponse();
 
 			log.info("Logging Filter baseMessage: {}", config.getBaseMessage());
-			if(config.isPreLogger()) {
+			if (config.isPreLogger()) {
 				log.info("Logging Filter Start: request uri -> {}", request.getURI());
 			}
 			return chain.filter(exchange).then(Mono.fromRunnable(() -> {
-				if(config.isPostLogger()) {
+				if (config.isPostLogger()) {
 					log.info("Logging Filter End: response code -> {}", response.getStatusCode());
 				}
 			}));
@@ -35,7 +36,8 @@ public class LoggingFilter extends AbstractGatewayFilterFactory<LoggingFilter.Co
 	}
 
 	@Data
-	public static class Config{
+	public static class Config {
+
 		private String baseMessage;
 		private boolean preLogger;
 		private boolean postLogger;
