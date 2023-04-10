@@ -37,10 +37,6 @@ spring:
             - Path=/second-service/**
           filters:
             - CustomFilter
-        - id: user-service
-          uri: lb://user-service
-          predicates:
-            - Path=/user-service/**
         - id: catalog-service
           uri: lb://catalog-service
           predicates:
@@ -49,3 +45,27 @@ spring:
           uri: lb://order-service
           predicates:
             - Path=/order-service/**
+        - id: user-service
+          uri: lb://user-service
+          predicates:
+            - Path=/user-service/login
+            - Method=POST
+          filters:
+            - RemoveRequestHeader=Cookie
+            - RewritePath=/user-service/(?<segment>.*), /$\{segment}
+        - id: user-service
+          uri: lb://user-service
+          predicates:
+            - Path=/user-service/users
+            - Method=POST
+          filters:
+            - RemoveRequestHeader=Cookie
+            - RewritePath=/user-service/(?<segment>.*), /$\{segment}
+        - id: user-service
+          uri: lb://user-service
+          predicates:
+            - Path=/user-service/**
+            - Method=GET
+          filters:
+            - RemoveRequestHeader=Cookie
+            - RewritePath=/user-service/(?<segment>.*), /$\{segment}
