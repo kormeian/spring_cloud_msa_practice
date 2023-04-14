@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -19,6 +20,7 @@ import org.springframework.security.web.SecurityFilterChain;
 public class WebSecurity {
 
 	private AuthenticationConfiguration authenticationConfiguration;
+	private Environment env;
 	private UserService userService;
 
 	@Autowired
@@ -32,20 +34,25 @@ public class WebSecurity {
 		this.userService = userService;
 	}
 
+	@Autowired
+	public void setEnv(Environment env) {
+		this.env = env;
+	}
+
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http.csrf().disable()
 			.authorizeRequests()
-			.antMatchers("/**").hasIpAddress("192.168.219.100").and()
+			.antMatchers("/**")
+			//.hasIpAddress("192.168.219.100").and()
+			.permitAll().and()
 			.addFilter(getAuthenticationFilter());
 		http.headers().frameOptions().disable();
 		return http.build();
 	}
 
 	private AuthenticationFilter getAuthenticationFilter() throws Exception {
-		AuthenticationFilter authenticationFilter = new AuthenticationFilter();
-		authenticationFilter.setAuthenticationManager(authenticationManager());
-		return authenticationFilter;
+		return new AuthenticationFilter(userService, env, authenticationManager());
 	}
 
 	@Bean

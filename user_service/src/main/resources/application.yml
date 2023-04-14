@@ -31,3 +31,7 @@ eureka:
 
 greeting:
   message: Hello from the user service!
+
+token:
+  secret: user_token
+  expiration_time: 864000000
